@@ -9,7 +9,9 @@ import furknttr.randevusistemi.AccountMVC.model.dto.response.LoginResDto;
 import furknttr.randevusistemi.AccountMVC.model.entity.Member;
 import furknttr.randevusistemi.AccountMVC.repository.MemberRepository;
 import furknttr.randevusistemi.AccountMVC.service.IAccountService;
+import furknttr.randevusistemi.Exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +43,11 @@ class AccountService implements IAccountService {
 
     @Override
     public LoginResDto loginUser(LoginReqDto loginReq) {
-        Member member = memberRepo.findByEmail(loginReq.getEmail()).orElseThrow();
+        Member member = memberRepo.findByEmail(loginReq.getEmail())
+                .orElseThrow(()-> new GeneralException(HttpStatus.NOT_FOUND, "Kullanıcı Bulunamadı!"));
 
         if (!passwordEncoder.matches(loginReq.getPassword(), member.getPassword())){
-            throw new RuntimeException("Kullanıcı Adı veya Şifre Hatalı");
+            throw new GeneralException(HttpStatus.BAD_REQUEST, "Şifre Hatalı");
         }
 
         return memberMapper.toLoginResDto(member);
@@ -52,7 +55,9 @@ class AccountService implements IAccountService {
 
     @Override
     public void updateProfile(UpdateReqDto updateReqDto, Long id) {
-        Member member = memberRepo.getReferenceById(id);
+        // Varsa member'ı getirir, YOKSA anında senin özel hatanı fırlatır.
+        Member member = memberRepo.findById(id)
+                .orElseThrow(() -> new GeneralException(HttpStatus.NOT_FOUND, "Kullanıcı Bulunamadı!"));
         memberMapper.updateDtoToMember(updateReqDto, member);
         memberRepo.save(member);
         emailService.changeProfileInformation(member.getEmail());
@@ -60,11 +65,13 @@ class AccountService implements IAccountService {
 
     @Override
     public void changePassword(ChangePasswordReqDto changePasswordReqDto, Long id) {
-        Member member = memberRepo.getReferenceById(id);
+        // Varsa member'ı getirir, YOKSA anında senin özel hatanı fırlatır.
+        Member member = memberRepo.findById(id)
+                .orElseThrow(() -> new GeneralException(HttpStatus.NOT_FOUND, "Kullanıcı Bulunamadı!"));
         String oldPass = changePasswordReqDto.getOldPassword();
 
         if (!passwordEncoder.matches(oldPass, member.getPassword())){
-            throw new RuntimeException("Mevcut Şifre Hatalı");
+            throw new GeneralException(HttpStatus.BAD_REQUEST, "Mevcut Şifreniz Hatalı");
         }
 
         updateMemberPassword(member, changePasswordReqDto.getNewPassword());
