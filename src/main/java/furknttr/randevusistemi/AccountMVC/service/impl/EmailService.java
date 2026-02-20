@@ -13,13 +13,12 @@ public class EmailService {
 
     public void sendWelcomeEmail(String toEmail, String name) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(göndericiMail); // Kimden gidiyor
-        message.setTo(toEmail); // Kime gidiyor
+        message.setFrom(göndericiMail);
+        message.setTo(toEmail);
         message.setSubject("Ailemize Hoşgeldin!");
         message.setText("Selam " + name + ",\n\nKaydın başarıyla oluşturuldu. Berber randevunu hemen alabilirsin!\n\nSevgiler,\nFurkan Code A.Ş.");
 
         mailSender.send(message);
-        System.out.println("Mail fişeklendi: " + toEmail);
     }
 
     public void verificationEmail(String toEmail){
