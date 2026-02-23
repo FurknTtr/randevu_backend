@@ -1,10 +1,12 @@
 package furknttr.randevusistemi.AccountMVC.service.impl;
 
+
 import furknttr.randevusistemi.AccountMVC.mapper.MemberMapper;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.ChangePasswordReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.LoginReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.RegisterReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.UpdateReqDto;
+import furknttr.randevusistemi.AccountMVC.model.dto.response.GetMeResDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.response.LoginResDto;
 import furknttr.randevusistemi.AccountMVC.model.entity.Member;
 import furknttr.randevusistemi.AccountMVC.repository.MemberRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class AccountService implements IAccountService {
 
+    private final JwtService jwtService;
     private final EmailService emailService;
     private final MemberMapper memberMapper;
     private final MemberRepository memberRepo;
@@ -50,13 +53,17 @@ class AccountService implements IAccountService {
             throw new GeneralException(HttpStatus.BAD_REQUEST, "Şifre Hatalı");
         }
 
-        return memberMapper.toLoginResDto(member);
+        return new LoginResDto(jwtService.generateToken(member.getEmail()));
     }
 
     @Override
-    public void updateProfile(UpdateReqDto updateReqDto, Long id) {
+    public void updateProfile(UpdateReqDto updateReqDto, String authHeader) {
         // Varsa member'ı getirir, YOKSA anında senin özel hatanı fırlatır.
-        Member member = memberRepo.findById(id)
+        String token = authHeader.substring(7);
+        String tokenIdStr = jwtService.extractMemberId(token);
+        Long tokenId = Long.parseLong(tokenIdStr);
+
+        Member member = memberRepo.findById(tokenId)
                 .orElseThrow(() -> new GeneralException(HttpStatus.NOT_FOUND, "Kullanıcı Bulunamadı!"));
         memberMapper.updateDtoToMember(updateReqDto, member);
         memberRepo.save(member);
@@ -64,9 +71,13 @@ class AccountService implements IAccountService {
     }
 
     @Override
-    public void changePassword(ChangePasswordReqDto changePasswordReqDto, Long id) {
+    public void changePassword(ChangePasswordReqDto changePasswordReqDto, String authHeader) {
         // Varsa member'ı getirir, YOKSA anında senin özel hatanı fırlatır.
-        Member member = memberRepo.findById(id)
+        String token = authHeader.substring(7);
+        String tokenIdStr = jwtService.extractMemberId(token);
+        Long tokenId = Long.parseLong(tokenIdStr);
+
+        Member member = memberRepo.findById(tokenId)
                 .orElseThrow(() -> new GeneralException(HttpStatus.NOT_FOUND, "Kullanıcı Bulunamadı!"));
         String oldPass = changePasswordReqDto.getOldPassword();
 
@@ -77,6 +88,15 @@ class AccountService implements IAccountService {
         updateMemberPassword(member, changePasswordReqDto.getNewPassword());
         memberRepo.save(member);
         emailService.changePasswordInformation(member.getEmail());
+    }
+
+    @Override
+    public GetMeResDto getMe(String authHeader) {
+        String token = authHeader.substring(7);
+        String tokenIdStr = jwtService.extractMemberId(token);
+        Long tokenId = Long.parseLong(tokenIdStr);
+        Member member = memberRepo.findById(tokenId).orElseThrow(()->new GeneralException(HttpStatus.NOT_FOUND, "Kullanıcı Bulunamadı"));
+        return memberMapper.toGetMeResDto(member);
     }
 
     private void updateMemberPassword(Member member, String rawPassword) {

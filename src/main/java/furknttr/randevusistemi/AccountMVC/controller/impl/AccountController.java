@@ -5,6 +5,7 @@ import furknttr.randevusistemi.AccountMVC.model.dto.request.ChangePasswordReqDto
 import furknttr.randevusistemi.AccountMVC.model.dto.request.LoginReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.RegisterReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.UpdateReqDto;
+import furknttr.randevusistemi.AccountMVC.model.dto.response.GetMeResDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.response.LoginResDto;
 import furknttr.randevusistemi.AccountMVC.service.IAccountService;
 import jakarta.validation.Valid;
@@ -34,15 +35,21 @@ public class AccountController implements IAccountController {
 
     //id ler Token kırılıp gelicek, şimdilik yok gene.
     @Override
-    @PutMapping("/{id}/update")
-    public void updateProfile(@RequestBody @Valid UpdateReqDto updateReq, @PathVariable Long id) {
-        accountService.updateProfile(updateReq, id);
+    @PutMapping("/update")
+    public void updateProfile(@RequestBody @Valid UpdateReqDto updateReq,@RequestHeader("Authorization") String authHeader) {
+        accountService.updateProfile(updateReq, authHeader);
     }
 
     @Override
-    @PutMapping("/{id}/password")
-    public void changePassword(@RequestBody @Valid ChangePasswordReqDto changePasswordReqDto, @PathVariable Long id) {
-        accountService.changePassword(changePasswordReqDto, id);
+    @PutMapping("/password")
+    public void changePassword(@RequestBody @Valid ChangePasswordReqDto changePasswordReqDto, @RequestHeader("Authorization") String authHeader) {
+        accountService.changePassword(changePasswordReqDto, authHeader);
+    }
+
+    @Override
+    @GetMapping("/me")
+    public GetMeResDto getMe(@RequestHeader("Authorization") String authHeader) {
+        return accountService.getMe(authHeader);
     }
 
 }

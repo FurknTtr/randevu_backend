@@ -2,7 +2,7 @@ package furknttr.randevusistemi.AccountMVC.mapper;
 
 import furknttr.randevusistemi.AccountMVC.model.dto.request.RegisterReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.UpdateReqDto;
-import furknttr.randevusistemi.AccountMVC.model.dto.response.LoginResDto;
+import furknttr.randevusistemi.AccountMVC.model.dto.response.GetMeResDto;
 import furknttr.randevusistemi.AccountMVC.model.entity.Member;
 import org.springframework.stereotype.Component;
 
@@ -32,16 +32,16 @@ public class MemberMapper {
         return dto;
     }
 
-    public LoginResDto toLoginResDto(Member member){
-        LoginResDto loginResDto = new LoginResDto();
-        loginResDto.setId(member.getId());
-        loginResDto.setEmail(member.getEmail());
-        loginResDto.setUserName(member.getUserName());
-        loginResDto.setPhone(member.getPhone());
-        loginResDto.setHasCompany(member.isHasCompany());
-        loginResDto.setActive(member.isActive());
+    public GetMeResDto toGetMeResDto(Member member){
+        GetMeResDto getMeResDto = new GetMeResDto();
+        getMeResDto.setId(member.getId());
+        getMeResDto.setEmail(member.getEmail());
+        getMeResDto.setUserName(member.getUserName());
+        getMeResDto.setPhone(member.getPhone());
+        getMeResDto.setHasCompany(member.isHasCompany());
+        getMeResDto.setActive(member.isActive());
 
-        return loginResDto;
+        return getMeResDto;
     }
 
 }

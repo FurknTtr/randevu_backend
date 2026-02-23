@@ -4,6 +4,7 @@ import furknttr.randevusistemi.AccountMVC.model.dto.request.ChangePasswordReqDto
 import furknttr.randevusistemi.AccountMVC.model.dto.request.LoginReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.RegisterReqDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.request.UpdateReqDto;
+import furknttr.randevusistemi.AccountMVC.model.dto.response.GetMeResDto;
 import furknttr.randevusistemi.AccountMVC.model.dto.response.LoginResDto;
 
 public interface IAccountController {
@@ -12,8 +13,9 @@ public interface IAccountController {
 
     LoginResDto loginUser(LoginReqDto login);
 
-    void updateProfile(UpdateReqDto updateReq, Long id);
+    void updateProfile(UpdateReqDto updateReq, String authHeader);
 
-    void changePassword(ChangePasswordReqDto changePasswordReqDto, Long id);
+    void changePassword(ChangePasswordReqDto changePasswordReqDto, String authHeader);
 
+    GetMeResDto getMe(String authHeader);
 }
