@@ -1,4 +1,4 @@
-package furknttr.randevusistemi.AccountMVC.service.impl;
+package furknttr.randevusistemi.JWT;
 
 
 import io.jsonwebtoken.Jwts;

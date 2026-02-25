@@ -12,6 +12,7 @@ import furknttr.randevusistemi.AccountMVC.model.entity.Member;
 import furknttr.randevusistemi.AccountMVC.repository.MemberRepository;
 import furknttr.randevusistemi.AccountMVC.service.IAccountService;
 import furknttr.randevusistemi.Exception.GeneralException;
+import furknttr.randevusistemi.JWT.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +42,7 @@ class AccountService implements IAccountService {
         updateMemberPassword(member, registerReqDto.getPassword());
         memberRepo.save(member);
 
-        emailService.sendWelcomeEmail(registerReqDto.getEmail(), registerReqDto.getUserName());
+        //emailService.sendWelcomeEmail(registerReqDto.getEmail(), registerReqDto.getUserName());
     }
 
     @Override
@@ -53,7 +54,8 @@ class AccountService implements IAccountService {
             throw new GeneralException(HttpStatus.BAD_REQUEST, "Şifre Hatalı");
         }
 
-        return new LoginResDto(jwtService.generateToken(member.getEmail()));
+        String memberId = String.valueOf(member.getId());
+        return new LoginResDto(jwtService.generateToken(memberId));
     }
 
     @Override

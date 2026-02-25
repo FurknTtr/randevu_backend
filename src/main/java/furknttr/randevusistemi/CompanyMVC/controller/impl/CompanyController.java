@@ -2,11 +2,10 @@ package furknttr.randevusistemi.CompanyMVC.controller.impl;
 
 import furknttr.randevusistemi.CompanyMVC.controller.ICompanyController;
 import furknttr.randevusistemi.CompanyMVC.model.dto.request.AddCompanyReqDto;
+import furknttr.randevusistemi.CompanyMVC.model.dto.response.MyCompaniesResDto;
 import furknttr.randevusistemi.CompanyMVC.service.ICompanyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +21,8 @@ public class CompanyController implements ICompanyController {
     }
 
     @Override
-    public void getMyCompanies() {
-
+    @GetMapping("/myCompanies")
+    public MyCompaniesResDto myCompanies(@RequestHeader("Authorization") String authHeader) {
+        return companyService.myCompanies(authHeader);
     }
 }

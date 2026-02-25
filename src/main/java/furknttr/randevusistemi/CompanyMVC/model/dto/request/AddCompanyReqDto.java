@@ -9,5 +9,7 @@ public class AddCompanyReqDto {
     private String name;
     private String phone;
     private int cityId;
+    private String cityName;
     private int districtId;
+    private String districtName;
 }

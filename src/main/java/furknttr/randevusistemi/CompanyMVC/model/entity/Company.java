@@ -25,11 +25,17 @@ public class Company {
     private String phone;
 
     // Şehir ve İlçe'yi String tutmak MVP için en hızlısıdır.
-    @Column(nullable = false)
+    @Column(nullable = false, name = "city_id")
     private int cityId;
 
-    @Column(nullable = false)
+    @Column(name = "city_name")
+    private String cityName;
+
+    @Column(nullable = false, name = "district_id")
     private int districtId;
+
+    @Column(name = "district_name")
+    private String districtName;
 
     // SABİT SÜRE: "Her randevu 30 dk" kuralı burada tutulur.
     @Column(name = "slot_duration", nullable = false)
